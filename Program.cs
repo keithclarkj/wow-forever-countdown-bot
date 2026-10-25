@@ -17,7 +17,7 @@ if (string.IsNullOrWhiteSpace(settings.EventName) ||
     string.IsNullOrWhiteSpace(settings.ChannelId) ||
     !ulong.TryParse(settings.ChannelId, out _) ||
     settings.TargetDateUtc.Offset != TimeSpan.Zero ||
-    settings.UpdateIntervalMinutes < 10)
+    settings.UpdateIntervalMinutes < 1)
     throw new InvalidOperationException("Check EventName, numeric ChannelId, UTC date (Z), and update interval (at least 10 minutes).");
 
 using var client = new HttpClient { BaseAddress = new Uri("https://discord.com/api/v10/") };
@@ -36,7 +36,7 @@ while (!shutdown.IsCancellationRequested)
         var remaining = settings.TargetDateUtc - DateTimeOffset.UtcNow;
         var name = remaining <= TimeSpan.Zero
             ? $"{settings.EventName}: Finished!"
-            : $"{settings.EventName}: {(int)remaining.TotalDays}d, {remaining.Hours}h, {remaining.Minutes}m";
+            : $"\u267e\ufe0f {settings.EventName} \u267e\ufe0f {(int)remaining.TotalDays}d, {remaining.Hours}h, {remaining.Minutes}m";
 
         // Discord channel names have a 100-character maximum.
         if (name.Length > 100)
